@@ -6,12 +6,10 @@ import {
 } from "./registry.js";
 
 describe("channel registry", () => {
-  it("normalizes aliases", () => {
-    expect(normalizeChatChannelId("imsg")).toBe("imessage");
-    expect(normalizeChatChannelId("gchat")).toBe("googlechat");
-    expect(normalizeChatChannelId("google-chat")).toBe("googlechat");
-    expect(normalizeChatChannelId("internet-relay-chat")).toBe("irc");
-    expect(normalizeChatChannelId("web")).toBeNull();
+  it("normalizes known channels and rejects unknown", () => {
+    expect(normalizeChatChannelId("telegram")).toBe("telegram");
+    expect(normalizeChatChannelId("discord")).toBe("discord");
+    expect(normalizeChatChannelId("unknown-channel")).toBeNull();
   });
 
   it("keeps Telegram first in the default order", () => {

@@ -45,8 +45,8 @@ function buildParams(commandBody: string, cfg: OpenClawConfig, ctxOverrides?: Pa
     CommandBody: commandBody,
     CommandSource: "text",
     CommandAuthorized: true,
-    Provider: "whatsapp",
-    Surface: "whatsapp",
+    Provider: "telegram",
+    Surface: "telegram",
     ...ctxOverrides,
   } as MsgContext;
 
@@ -423,7 +423,7 @@ describe("handleCommands /tts", () => {
   it("returns status for bare /tts on text command surfaces", async () => {
     const cfg = {
       commands: { text: true },
-      channels: { whatsapp: { allowFrom: ["*"] } },
+      channels: { telegram: { allowFrom: ["*"] } },
       messages: { tts: { prefsPath: path.join(testWorkspaceDir, "tts.json") } },
     } as OpenClawConfig;
     const params = buildParams("/tts", cfg);

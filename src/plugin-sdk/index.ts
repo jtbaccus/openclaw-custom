@@ -1,9 +1,4 @@
 export { CHANNEL_MESSAGE_ACTION_NAMES } from "../channels/plugins/message-action-names.js";
-export {
-  BLUEBUBBLES_ACTIONS,
-  BLUEBUBBLES_ACTION_NAMES,
-  BLUEBUBBLES_GROUP_ACTIONS,
-} from "../channels/plugins/bluebubbles-actions.js";
 export type {
   ChannelAccountSnapshot,
   ChannelAccountState,
@@ -164,10 +159,8 @@ export type { NormalizedLocation } from "../channels/location.js";
 export { formatLocationText, toLocationContext } from "../channels/location.js";
 export { resolveControlCommandGate } from "../channels/command-gating.js";
 export {
-  resolveBlueBubblesGroupRequireMention,
   resolveDiscordGroupRequireMention,
   resolveTelegramGroupRequireMention,
-  resolveBlueBubblesGroupToolPolicy,
   resolveDiscordGroupToolPolicy,
   resolveTelegramGroupToolPolicy,
 } from "../channels/plugins/group-mentions.js";
@@ -276,9 +269,6 @@ export {
 } from "../channels/plugins/normalize/telegram.js";
 export { collectTelegramStatusIssues } from "../channels/plugins/status-issues/telegram.js";
 export { type TelegramProbe } from "../telegram/probe.js";
-
-// Channel: BlueBubbles
-export { collectBlueBubblesStatusIssues } from "../channels/plugins/status-issues/bluebubbles.js";
 
 // Media utilities
 export { loadWebMedia, type WebMediaResult } from "../web/media.js";
