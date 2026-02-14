@@ -120,10 +120,13 @@ describe("initSessionState reset triggers in Telegram groups", () => {
       SenderId: "999999",
     };
 
+    // In the real Telegram flow, an unauthorized sender (not in allowFrom)
+    // would have commandAuthorized=false from the Telegram monitor's
+    // resolveControlCommandGate. This prevents them from triggering resets.
     const result = await initSessionState({
       ctx: groupMessageCtx,
       cfg,
-      commandAuthorized: true,
+      commandAuthorized: false,
     });
 
     expect(result.triggerBodyNormalized).toBe("/new");

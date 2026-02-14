@@ -17,9 +17,11 @@ A trimmed fork of OpenClaw (github.com/openclaw/openclaw) customized as Jon's pe
 
 ## Current Status
 
-- Phase 0: Project Scaffolding ✅ (if you're reading this, it's done)
-- Phase 1: Fork & Strip — NEXT
-- Phases 2-10: Pending
+- Phase 0: Project Scaffolding ✅
+- Phase 1: Fork & Strip ✅ (build passes, 100% tests, gateway starts)
+- Phase 2: Model Routing — IN PROGRESS
+- Phase 3: Channel Setup — IN PROGRESS
+- Phases 4-10: Pending
 
 ## Tech Stack
 

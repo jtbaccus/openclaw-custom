@@ -311,16 +311,13 @@ describe("mention helpers", () => {
 });
 
 describe("resolveGroupRequireMention", () => {
-  it("respects Discord guild/channel requireMention settings", () => {
+  it("respects Discord group-level requireMention settings", () => {
     const cfg: OpenClawConfig = {
       channels: {
         discord: {
-          guilds: {
-            "145": {
+          groups: {
+            "123": {
               requireMention: false,
-              channels: {
-                general: { allow: true },
-              },
             },
           },
         },

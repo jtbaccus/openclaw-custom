@@ -10,37 +10,39 @@
 - [x] Update projects/_index.md
 - [x] Log to activity-log.md
 
-## Phase 1: Fork & Strip ⬜
+## Phase 1: Fork & Strip ✅
 **Goal:** Remove unwanted channels/features/native apps; verify build passes.
 
+Build: PASS | Tests: 534/534 (100%) | Gateway: starts cleanly
+
 ### Directories to DELETE entirely:
-- [ ] apps/android/, apps/ios/, apps/macos/, apps/shared/
-- [ ] Swabble/ (Swift wake-word daemon)
-- [ ] vendor/a2ui/ (Canvas)
-- [ ] src/canvas-host/, src/tts/
-- [ ] src/whatsapp/, src/slack/, src/imessage/, src/line/
+- [x] apps/android/, apps/ios/, apps/macos/, apps/shared/
+- [x] Swabble/ (Swift wake-word daemon)
+- [x] vendor/a2ui/ (Canvas)
+- [x] src/canvas-host/, src/tts/
+- [x] src/whatsapp/, src/slack/, src/imessage/, src/line/
 
 ### Extensions to DELETE (keep: telegram, discord, memory-core, memory-lancedb, llm-task, thread-ownership, diagnostics-otel):
-- [ ] All others (bluebubbles, copilot-proxy, device-pair, feishu, google-antigravity-auth, google-gemini-cli-auth, googlechat, imessage, irc, line, lobster, matrix, mattermost, minimax-portal-auth, msteams, nextcloud-talk, nostr, open-prose, phone-control, qwen-portal-auth, signal, slack, talk-voice, tlon, twitch, voice-call, whatsapp, zalo, zalouser)
+- [x] All others (bluebubbles, copilot-proxy, device-pair, feishu, google-antigravity-auth, google-gemini-cli-auth, googlechat, imessage, irc, line, lobster, matrix, mattermost, minimax-portal-auth, msteams, nextcloud-talk, nostr, open-prose, phone-control, qwen-portal-auth, signal, slack, talk-voice, tlon, twitch, voice-call, whatsapp, zalo, zalouser)
 
 ### Skills to DELETE (keep: coding-agent, discord, github, healthcheck, himalaya, model-usage, session-logs, skill-creator, summarize, tmux, weather):
-- [ ] All others (1password, apple-notes, apple-reminders, bear-notes, blogwatcher, blucli, bluebubbles, camsnap, canvas, clawhub, eightctl, food-order, gemini, gifgrep, gog, goplaces, imsg, mcporter, nano-banana-pro, nano-pdf, notion, obsidian, openai-image-gen, openai-whisper-api, openai-whisper, openhue, oracle, ordercli, peekaboo, sag, sherpa-onnx-tts, slack, songsee, sonoscli, spotify-player, things-mac, trello, video-frames, voice-call, wacli)
+- [x] All others (1password, apple-notes, apple-reminders, bear-notes, blogwatcher, blucli, bluebubbles, camsnap, canvas, clawhub, eightctl, food-order, gemini, gifgrep, gog, goplaces, imsg, mcporter, nano-banana-pro, nano-pdf, notion, obsidian, openai-image-gen, openai-whisper-api, openai-whisper, openhue, oracle, ordercli, peekaboo, sag, sherpa-onnx-tts, slack, songsee, sonoscli, spotify-player, things-mac, trello, video-frames, voice-call, wacli)
 
 ### Fix broken imports:
-- [ ] src/channels/registry.ts — remove deleted channel registrations
-- [ ] src/config/zod-schema.channels.ts — strip removed channel schemas
-- [ ] src/config/types.*.ts — delete channel-specific type files
-- [ ] src/agents/tools/ — remove channel-specific action files
-- [ ] package.json — remove unused deps
-- [ ] pnpm-workspace.yaml — remove deleted extension/package refs
-- [ ] Remove macOS/Windows daemon code (keep systemd only)
-- [ ] Remove iOS/Android/macOS build scripts
+- [x] src/channels/registry.ts — remove deleted channel registrations
+- [x] src/config/zod-schema.channels.ts — strip removed channel schemas
+- [x] src/config/types.*.ts — delete channel-specific type files
+- [x] src/agents/tools/ — remove channel-specific action files
+- [x] package.json — remove unused deps
+- [x] pnpm-workspace.yaml — remove deleted extension/package refs
+- [x] Remove macOS/Windows daemon code (keep systemd only)
+- [x] Remove iOS/Android/macOS build scripts
 
 ### Verify:
-- [ ] pnpm install succeeds
-- [ ] pnpm build compiles without errors
-- [ ] pnpm test:fast passes
-- [ ] Gateway starts: node scripts/run-node.mjs --dev gateway
+- [x] pnpm install succeeds
+- [x] pnpm build compiles without errors
+- [x] pnpm test:fast passes
+- [x] Gateway starts: node scripts/run-node.mjs --dev gateway
 
 ## Phase 2: Model Routing ⬜
 - [ ] Configure providers in openclaw.json (Ollama, DeepSeek, Anthropic)
