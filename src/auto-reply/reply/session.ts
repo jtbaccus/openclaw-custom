@@ -3,7 +3,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import type { OpenClawConfig } from "../../config/config.js";
-import type { TtsAutoMode } from "../../config/types.tts.js";
+
 import type { MsgContext, TemplateContext } from "../templating.js";
 import { resolveSessionAgentId } from "../../agents/agent-scope.js";
 import { normalizeChatType } from "../../channels/chat-type.js";
@@ -137,7 +137,7 @@ export async function initSessionState(params: {
   let persistedThinking: string | undefined;
   let persistedVerbose: string | undefined;
   let persistedReasoning: string | undefined;
-  let persistedTtsAuto: TtsAutoMode | undefined;
+  let persistedTtsAuto: string | undefined;
   let persistedModelOverride: string | undefined;
   let persistedProviderOverride: string | undefined;
 

@@ -6,7 +6,7 @@ import { fetchChannelPermissionsDiscord } from "../../discord/send.js";
 import { parseDiscordTarget } from "../../discord/targets.js";
 import { danger } from "../../globals.js";
 import { defaultRuntime, type RuntimeEnv } from "../../runtime.js";
-import { fetchSlackScopes, type SlackScopesResult } from "../../slack/scopes.js";
+
 import { theme } from "../../terminal/theme.js";
 import { formatChannelAccountLabel, requireValidConfig } from "./shared.js";
 
@@ -45,10 +45,6 @@ type ChannelCapabilitiesReport = {
   support?: ChannelCapabilities;
   actions?: string[];
   probe?: unknown;
-  slackScopes?: Array<{
-    tokenType: "bot" | "user";
-    result: SlackScopesResult;
-  }>;
   target?: DiscordTargetSummary;
   channelPermissions?: DiscordPermissionsReport;
 };
@@ -378,33 +374,6 @@ async function resolveChannelReports(params: {
       }
     }
 
-    let slackScopes: ChannelCapabilitiesReport["slackScopes"];
-    if (plugin.id === "slack" && configured && enabled) {
-      const botToken = (resolvedAccount as { botToken?: string }).botToken?.trim();
-      const userToken = (
-        resolvedAccount as { config?: { userToken?: string } }
-      ).config?.userToken?.trim();
-      const scopeReports: NonNullable<ChannelCapabilitiesReport["slackScopes"]> = [];
-      if (botToken) {
-        scopeReports.push({
-          tokenType: "bot",
-          result: await fetchSlackScopes(botToken, timeoutMs),
-        });
-      } else {
-        scopeReports.push({
-          tokenType: "bot",
-          result: { ok: false, error: "Slack bot token missing." },
-        });
-      }
-      if (userToken) {
-        scopeReports.push({
-          tokenType: "user",
-          result: await fetchSlackScopes(userToken, timeoutMs),
-        });
-      }
-      slackScopes = scopeReports;
-    }
-
     let discordTarget: DiscordTargetSummary | undefined;
     let discordPermissions: DiscordPermissionsReport | undefined;
     if (plugin.id === "discord" && params.target) {
@@ -430,7 +399,6 @@ async function resolveChannelReports(params: {
       target: discordTarget,
       channelPermissions: discordPermissions,
       actions,
-      slackScopes,
     });
   }
   return reports;
@@ -520,17 +488,6 @@ export async function channelsCapabilitiesCommand(
       lines.push(...probeLines);
     } else if (report.configured && report.enabled) {
       lines.push(theme.muted("Probe: unavailable"));
-    }
-    if (report.channel === "slack" && report.slackScopes) {
-      for (const entry of report.slackScopes) {
-        const source = entry.result.source ? ` (${entry.result.source})` : "";
-        const label = entry.tokenType === "user" ? "User scopes" : "Bot scopes";
-        if (entry.result.ok && entry.result.scopes?.length) {
-          lines.push(`${label}${source}: ${entry.result.scopes.join(", ")}`);
-        } else if (entry.result.error) {
-          lines.push(`${label}: ${theme.error(entry.result.error)}`);
-        }
-      }
     }
     if (report.channel === "discord" && report.channelPermissions) {
       const perms = report.channelPermissions;

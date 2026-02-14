@@ -2,7 +2,6 @@ import { createRequire } from "node:module";
 import type { PluginRuntime } from "./types.js";
 import { resolveEffectiveMessagesConfig, resolveHumanDelayConfig } from "../../agents/identity.js";
 import { createMemoryGetTool, createMemorySearchTool } from "../../agents/tools/memory-tool.js";
-import { handleSlackAction } from "../../agents/tools/slack-actions.js";
 import {
   chunkByNewline,
   chunkMarkdownText,
@@ -39,9 +38,7 @@ import { createReplyDispatcherWithTyping } from "../../auto-reply/reply/reply-di
 import { removeAckReactionAfterReply, shouldAckReaction } from "../../channels/ack-reactions.js";
 import { resolveCommandAuthorizedFromAuthorizers } from "../../channels/command-gating.js";
 import { discordMessageActions } from "../../channels/plugins/actions/discord.js";
-import { signalMessageActions } from "../../channels/plugins/actions/signal.js";
 import { telegramMessageActions } from "../../channels/plugins/actions/telegram.js";
-import { createWhatsAppLoginTool } from "../../channels/plugins/agent-tools/whatsapp-login.js";
 import { recordInboundSession } from "../../channels/session.js";
 import { registerMemoryCli } from "../../cli/memory-cli.js";
 import { loadConfig, writeConfigFile } from "../../config/config.js";
@@ -68,9 +65,6 @@ import { resolveDiscordChannelAllowlist } from "../../discord/resolve-channels.j
 import { resolveDiscordUserAllowlist } from "../../discord/resolve-users.js";
 import { sendMessageDiscord, sendPollDiscord } from "../../discord/send.js";
 import { shouldLogVerbose } from "../../globals.js";
-import { monitorIMessageProvider } from "../../imessage/monitor.js";
-import { probeIMessage } from "../../imessage/probe.js";
-import { sendMessageIMessage } from "../../imessage/send.js";
 import { getChannelActivity, recordChannelActivity } from "../../infra/channel-activity.js";
 import { enqueueSystemEvent } from "../../infra/system-events.js";
 import {
@@ -108,18 +102,6 @@ import {
 } from "../../pairing/pairing-store.js";
 import { runCommandWithTimeout } from "../../process/exec.js";
 import { resolveAgentRoute } from "../../routing/resolve-route.js";
-import { monitorSignalProvider } from "../../signal/index.js";
-import { probeSignal } from "../../signal/probe.js";
-import { sendMessageSignal } from "../../signal/send.js";
-import {
-  listSlackDirectoryGroupsLive,
-  listSlackDirectoryPeersLive,
-} from "../../slack/directory-live.js";
-import { monitorSlackProvider } from "../../slack/index.js";
-import { probeSlack } from "../../slack/probe.js";
-import { resolveSlackChannelAllowlist } from "../../slack/resolve-channels.js";
-import { resolveSlackUserAllowlist } from "../../slack/resolve-users.js";
-import { sendMessageSlack } from "../../slack/send.js";
 import {
   auditTelegramGroupMembership,
   collectTelegramUnmentionedGroupIds,
@@ -128,16 +110,6 @@ import { monitorTelegramProvider } from "../../telegram/monitor.js";
 import { probeTelegram } from "../../telegram/probe.js";
 import { sendMessageTelegram } from "../../telegram/send.js";
 import { resolveTelegramToken } from "../../telegram/token.js";
-import { textToSpeechTelephony } from "../../tts/tts.js";
-import { getActiveWebListener } from "../../web/active-listener.js";
-import {
-  getWebAuthAgeMs,
-  logoutWeb,
-  logWebSelfId,
-  readWebSelfId,
-  webAuthExists,
-} from "../../web/auth-store.js";
-import { loadWebMedia } from "../../web/media.js";
 import { formatNativeDependencyHint } from "./native-deps.js";
 
 let cachedVersion: string | null = null;
@@ -157,85 +129,6 @@ function resolveVersion(): string {
   }
 }
 
-const sendMessageWhatsAppLazy: PluginRuntime["channel"]["whatsapp"]["sendMessageWhatsApp"] = async (
-  ...args
-) => {
-  const { sendMessageWhatsApp } = await loadWebOutbound();
-  return sendMessageWhatsApp(...args);
-};
-
-const sendPollWhatsAppLazy: PluginRuntime["channel"]["whatsapp"]["sendPollWhatsApp"] = async (
-  ...args
-) => {
-  const { sendPollWhatsApp } = await loadWebOutbound();
-  return sendPollWhatsApp(...args);
-};
-
-const loginWebLazy: PluginRuntime["channel"]["whatsapp"]["loginWeb"] = async (...args) => {
-  const { loginWeb } = await loadWebLogin();
-  return loginWeb(...args);
-};
-
-const startWebLoginWithQrLazy: PluginRuntime["channel"]["whatsapp"]["startWebLoginWithQr"] = async (
-  ...args
-) => {
-  const { startWebLoginWithQr } = await loadWebLoginQr();
-  return startWebLoginWithQr(...args);
-};
-
-const waitForWebLoginLazy: PluginRuntime["channel"]["whatsapp"]["waitForWebLogin"] = async (
-  ...args
-) => {
-  const { waitForWebLogin } = await loadWebLoginQr();
-  return waitForWebLogin(...args);
-};
-
-const monitorWebChannelLazy: PluginRuntime["channel"]["whatsapp"]["monitorWebChannel"] = async (
-  ...args
-) => {
-  const { monitorWebChannel } = await loadWebChannel();
-  return monitorWebChannel(...args);
-};
-
-const handleWhatsAppActionLazy: PluginRuntime["channel"]["whatsapp"]["handleWhatsAppAction"] =
-  async (...args) => {
-    const { handleWhatsAppAction } = await loadWhatsAppActions();
-    return handleWhatsAppAction(...args);
-  };
-
-let webOutboundPromise: Promise<typeof import("../../web/outbound.js")> | null = null;
-let webLoginPromise: Promise<typeof import("../../web/login.js")> | null = null;
-let webLoginQrPromise: Promise<typeof import("../../web/login-qr.js")> | null = null;
-let webChannelPromise: Promise<typeof import("../../channels/web/index.js")> | null = null;
-let whatsappActionsPromise: Promise<
-  typeof import("../../agents/tools/whatsapp-actions.js")
-> | null = null;
-
-function loadWebOutbound() {
-  webOutboundPromise ??= import("../../web/outbound.js");
-  return webOutboundPromise;
-}
-
-function loadWebLogin() {
-  webLoginPromise ??= import("../../web/login.js");
-  return webLoginPromise;
-}
-
-function loadWebLoginQr() {
-  webLoginQrPromise ??= import("../../web/login-qr.js");
-  return webLoginQrPromise;
-}
-
-function loadWebChannel() {
-  webChannelPromise ??= import("../../channels/web/index.js");
-  return webChannelPromise;
-}
-
-function loadWhatsAppActions() {
-  whatsappActionsPromise ??= import("../../agents/tools/whatsapp-actions.js");
-  return whatsappActionsPromise;
-}
-
 export function createPluginRuntime(): PluginRuntime {
   return {
     version: resolveVersion(),
@@ -249,15 +142,11 @@ export function createPluginRuntime(): PluginRuntime {
       formatNativeDependencyHint,
     },
     media: {
-      loadWebMedia,
       detectMime,
       mediaKindFromMime,
       isVoiceCompatibleAudio,
       getImageMetadata,
       resizeToJpeg,
-    },
-    tts: {
-      textToSpeechTelephony,
     },
     tools: {
       createMemoryGetTool,
@@ -347,16 +236,6 @@ export function createPluginRuntime(): PluginRuntime {
         sendPollDiscord,
         monitorDiscordProvider,
       },
-      slack: {
-        listDirectoryGroupsLive: listSlackDirectoryGroupsLive,
-        listDirectoryPeersLive: listSlackDirectoryPeersLive,
-        probeSlack,
-        resolveChannelAllowlist: resolveSlackChannelAllowlist,
-        resolveUserAllowlist: resolveSlackUserAllowlist,
-        sendMessageSlack,
-        monitorSlackProvider,
-        handleSlackAction,
-      },
       telegram: {
         auditGroupMembership: auditTelegramGroupMembership,
         collectUnmentionedGroupIds: collectTelegramUnmentionedGroupIds,
@@ -365,33 +244,6 @@ export function createPluginRuntime(): PluginRuntime {
         sendMessageTelegram,
         monitorTelegramProvider,
         messageActions: telegramMessageActions,
-      },
-      signal: {
-        probeSignal,
-        sendMessageSignal,
-        monitorSignalProvider,
-        messageActions: signalMessageActions,
-      },
-      imessage: {
-        monitorIMessageProvider,
-        probeIMessage,
-        sendMessageIMessage,
-      },
-      whatsapp: {
-        getActiveWebListener,
-        getWebAuthAgeMs,
-        logoutWeb,
-        logWebSelfId,
-        readWebSelfId,
-        webAuthExists,
-        sendMessageWhatsApp: sendMessageWhatsAppLazy,
-        sendPollWhatsApp: sendPollWhatsAppLazy,
-        loginWeb: loginWebLazy,
-        startWebLoginWithQr: startWebLoginWithQrLazy,
-        waitForWebLogin: waitForWebLoginLazy,
-        monitorWebChannel: monitorWebChannelLazy,
-        handleWhatsAppAction: handleWhatsAppActionLazy,
-        createLoginTool: createWhatsAppLoginTool,
       },
       line: {
         listLineAccountIds,

@@ -1,12 +1,10 @@
 import type { ProgressReporter } from "../../cli/progress.js";
-import { resolveGatewayLogPaths } from "../../daemon/launchd.js";
 import { formatPortDiagnostics } from "../../infra/ports.js";
 import {
   type RestartSentinelPayload,
   summarizeRestartSentinel,
 } from "../../infra/restart-sentinel.js";
 import { formatTimeAgo, redactSecrets } from "./format.js";
-import { readFileTailLines, summarizeLogTail } from "./gateway.js";
 
 type ConfigIssueLike = { path: string; message: string };
 type ConfigSnapshotLike = {
@@ -164,32 +162,9 @@ export async function appendStatusAllDiagnosis(params: {
   }
 
   params.progress.setLabel("Reading logs…");
-  const logPaths = (() => {
-    try {
-      return resolveGatewayLogPaths(process.env);
-    } catch {
-      return null;
-    }
-  })();
-  if (logPaths) {
-    params.progress.setLabel("Reading logs…");
-    const [stderrTail, stdoutTail] = await Promise.all([
-      readFileTailLines(logPaths.stderrPath, 40).catch(() => []),
-      readFileTailLines(logPaths.stdoutPath, 40).catch(() => []),
-    ]);
-    if (stderrTail.length > 0 || stdoutTail.length > 0) {
-      lines.push("");
-      lines.push(muted(`Gateway logs (tail, summarized): ${logPaths.logDir}`));
-      lines.push(`  ${muted(`# stderr: ${logPaths.stderrPath}`)}`);
-      for (const line of summarizeLogTail(stderrTail, { maxLines: 22 }).map(redactSecrets)) {
-        lines.push(`  ${muted(line)}`);
-      }
-      lines.push(`  ${muted(`# stdout: ${logPaths.stdoutPath}`)}`);
-      for (const line of summarizeLogTail(stdoutTail, { maxLines: 22 }).map(redactSecrets)) {
-        lines.push(`  ${muted(line)}`);
-      }
-    }
-  }
+  // On Linux, gateway logs go to the systemd journal rather than log files.
+  lines.push("");
+  lines.push(muted("Gateway logs: use journalctl --user -u openclaw-gateway.service -n 200 --no-pager"));
   params.progress.tick();
 
   if (params.channelsStatus) {

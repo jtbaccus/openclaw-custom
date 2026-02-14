@@ -35,7 +35,6 @@ import {
   parseButtonsParam,
   parseCardParam,
   readBooleanParam,
-  resolveSlackAutoThreadId,
   resolveTelegramAutoThreadId,
 } from "./message-action-params.js";
 import { actionHasTarget, actionRequiresTarget } from "./message-action-spec.js";
@@ -470,17 +469,12 @@ async function handleSendAction(ctx: ResolvedActionContext): Promise<MessageActi
 
   const replyToId = readStringParam(params, "replyTo");
   const threadId = readStringParam(params, "threadId");
-  // Slack auto-threading can inject threadTs without explicit params; mirror to that session key.
-  const slackAutoThreadId =
-    channel === "slack" && !replyToId && !threadId
-      ? resolveSlackAutoThreadId({ to, toolContext: input.toolContext })
-      : undefined;
   // Telegram forum topic auto-threading: inject threadId so media/buttons land in the correct topic.
   const telegramAutoThreadId =
     channel === "telegram" && !threadId
       ? resolveTelegramAutoThreadId({ to, toolContext: input.toolContext })
       : undefined;
-  const resolvedThreadId = threadId ?? slackAutoThreadId ?? telegramAutoThreadId;
+  const resolvedThreadId = threadId ?? telegramAutoThreadId;
   // Write auto-resolved threadId back into params so downstream dispatch
   // (plugin `readStringParam(params, "threadId")`) picks it up.
   if (resolvedThreadId && !params.threadId) {

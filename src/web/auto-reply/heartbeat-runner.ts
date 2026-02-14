@@ -7,7 +7,7 @@ import {
 } from "../../auto-reply/heartbeat.js";
 import { getReplyFromConfig } from "../../auto-reply/reply.js";
 import { HEARTBEAT_TOKEN } from "../../auto-reply/tokens.js";
-import { resolveWhatsAppHeartbeatRecipients } from "../../channels/plugins/whatsapp-heartbeat.js";
+
 import { loadConfig } from "../../config/config.js";
 import {
   loadSessionStore,
@@ -340,5 +340,10 @@ export function resolveHeartbeatRecipients(
   cfg: ReturnType<typeof loadConfig>,
   opts: { to?: string; all?: boolean } = {},
 ) {
-  return resolveWhatsAppHeartbeatRecipients(cfg, opts);
+  // WhatsApp heartbeat recipients resolution was removed.
+  // Return the single target if provided, otherwise empty array.
+  if (opts.to) {
+    return [opts.to];
+  }
+  return [];
 }

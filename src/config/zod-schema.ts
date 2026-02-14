@@ -352,26 +352,6 @@ export const OpenClawSchema = z
       })
       .strict()
       .optional(),
-    canvasHost: z
-      .object({
-        enabled: z.boolean().optional(),
-        root: z.string().optional(),
-        port: z.number().int().positive().optional(),
-        liveReload: z.boolean().optional(),
-      })
-      .strict()
-      .optional(),
-    talk: z
-      .object({
-        voiceId: z.string().optional(),
-        voiceAliases: z.record(z.string(), z.string()).optional(),
-        modelId: z.string().optional(),
-        outputFormat: z.string().optional(),
-        apiKey: z.string().optional().register(sensitive),
-        interruptOnSpeech: z.boolean().optional(),
-      })
-      .strict()
-      .optional(),
     gateway: z
       .object({
         port: z.number().int().positive().optional(),
