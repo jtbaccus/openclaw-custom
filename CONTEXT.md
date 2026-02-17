@@ -1,6 +1,6 @@
 # OpenClaw Custom Fork — CONTEXT.md
 
-*Project: openclaw-custom | Created: 2026-02-14 | Status: All 10 phases complete*
+_Project: openclaw-custom | Created: 2026-02-14 | Status: All 10 phases complete_
 
 ## What This Is
 
@@ -34,17 +34,17 @@ All 10 phases complete. Awaiting API keys in ~/.openclaw/.env to go live.
 
 ## Key Files
 
-| File | Location | Purpose |
-|------|----------|---------|
-| openclaw.json | ~/.openclaw/openclaw.json | Main config (providers, channels, agents, skills, memory, browser) |
-| cron jobs | ~/.openclaw/cron/jobs.json | 3 scheduled jobs (heartbeat, morning brief, memory maintenance) |
-| .env | ~/.openclaw/.env | API keys (MUST be filled in before starting) |
-| .env.example | project root | Template showing required env vars |
-| systemd unit | ~/.config/systemd/user/turing.service | Gateway service |
-| SOUL.md | ~/turing/clawd/SOUL.md | Main agent personality |
-| SOUL-coder.md | ~/turing/clawd/SOUL-coder.md | Code agent personality |
-| SOUL-research.md | ~/turing/clawd/SOUL-research.md | Research agent personality |
-| Agent workspaces | ~/turing/clawd/agents/{coder,researcher}/ | Per-agent dirs with symlinks |
+| File             | Location                                  | Purpose                                                            |
+| ---------------- | ----------------------------------------- | ------------------------------------------------------------------ |
+| openclaw.json    | ~/.openclaw/openclaw.json                 | Main config (providers, channels, agents, skills, memory, browser) |
+| cron jobs        | ~/.openclaw/cron/jobs.json                | 3 scheduled jobs (heartbeat, morning brief, memory maintenance)    |
+| .env             | ~/.openclaw/.env                          | API keys (MUST be filled in before starting)                       |
+| .env.example     | project root                              | Template showing required env vars                                 |
+| systemd unit     | ~/.config/systemd/user/turing.service     | Gateway service                                                    |
+| SOUL.md          | ~/turing/clawd/SOUL.md                    | Main agent personality                                             |
+| SOUL-coder.md    | ~/turing/clawd/SOUL-coder.md              | Code agent personality                                             |
+| SOUL-research.md | ~/turing/clawd/SOUL-research.md           | Research agent personality                                         |
+| Agent workspaces | ~/turing/clawd/agents/{coder,researcher}/ | Per-agent dirs with symlinks                                       |
 
 ## Tech Stack
 
@@ -56,6 +56,14 @@ All 10 phases complete. Awaiting API keys in ~/.openclaw/.env to go live.
 - Embeddings: OpenAI text-embedding-3-small (local fallback via node-llama-cpp)
 - Browser: Playwright + Chrome for Testing 145 (headless)
 - Local model: Ollama v0.16.1 with qwen3:8b (5.2GB, ~6.7 tok/sec)
+
+## Archived Upstream Code
+
+The `_archived/` directory contains all 1,800 files removed during Phase 1
+(fork & strip). This is a read-only reference archive — nothing in it is built
+or loaded at runtime. If a stripped feature needs to be restored (e.g. a channel
+adapter or skill), copy the relevant files back to their original paths and
+re-wire them into the build. See `_archived/README.md` for details.
 
 ## Known Issues / Post-Implementation
 
